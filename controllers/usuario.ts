@@ -1,24 +1,44 @@
 import { Request, Response } from "express";
+import User from "../models/User";
 
 
-export const getUsuarios = (req: Request, res: Response) =>{
+
+export const getUsuarios = async (req: Request, res: Response) =>{
+    const data = await User.findAll();
     res.json({
-        msg:'getUsuarios'
+        msg:'getUsuarios',
+        data
     })
 }
-export const getUsuario = (req: Request, res: Response) =>{
-    const { id } = req.params;
+export const getUsuario = async (req: Request, res: Response) =>{
+    let { id } = req.params;
+    
+    const usuario = await User.findByPk(id);
+    if(!usuario){
+        res.status(404).json({
+            msg: 'User not found'
+        })
+    }
     res.json({
         msg:'getUsuario',
-        id
+        usuario
     })
 }
-export const postUsuario = (req: Request, res: Response) =>{
+export const postUsuario = async (req: Request, res: Response) =>{
     const { body } = req;
-    res.json({
-        msg:'postUsuario',
-        body
-    })
+    try {
+        const data = await User.create(body);
+        res.json({
+            msg:'postUsuario',
+            data
+        })
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Contact to administrator'
+        })
+    }
 }
 export const putUsuario = (req: Request, res: Response) =>{
     const { body } = req;
